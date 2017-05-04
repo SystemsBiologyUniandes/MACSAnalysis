@@ -3,7 +3,7 @@ function createCsvFiles( experiment_dir )
 %   CREATECSVFILES(experiment_dir) Creates the csv files corresponding to
 %   the experiment.
 %       experiment_dir must correspond to the experiment directory i.e. it
-%       must ONLY contain the time folders. THE LAST / MUST BE INCLUDED.
+%       must ONLY contain the time folders and no other files or folders. THE LAST / MUST BE INCLUDED.
 %       The csv file is stored in the experiment directory and its name is
 %       the same as the experiment directory's.
 
@@ -17,7 +17,7 @@ function createCsvFiles( experiment_dir )
     csv_filename = strcat(experiment_dir,experiment_name,'.csv');
     time_dir_full = strcat(experiment_dir, a(3).name, '/');
     pos_dirs = listDirectories(time_dir_full);
- 
+    
     for i = 3:length(a)
         createCsv(strcat(experiment_dir,a(i).name), csv_filename);
     end
