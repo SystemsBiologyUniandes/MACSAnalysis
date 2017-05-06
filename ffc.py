@@ -18,10 +18,21 @@ Settings:
     2. DECLARE CONSTANTS: Define the desired kernel, scaling factor s, the patterns for each channel, the directory and filenames of the corrections.
 '''
 
-#Error handling ad constant declaration
+# SET HERE THE DIRECTORY FOR THE CORRECTIONS AND THEIR FILENAMES, ALWAYS USE FINAL / FOR DIRECTORIES
+dir_corrections = '/home/gutiloluis/Dropbox/71macs/71macs_small_scripts_and_image_corrections/corrections/'
+
+#AVG_DARK_GFP
+fname_AVG_Dark = 'AVG_Dark.tif'
+#AVG_DARK_RFP
+fname_AVG_DarkRed = 'AVG_DARK_RFP.tif'
+fname_AVG_TotalGreen = 'AVG_GFP.tif'
+fname_AVG_TotalRed = 'AVG_RFP.tif'
+
+# SET HERE THE DEFAULT COLOR FOR THE SEGMENTATION CHANNEL.
 DEFAULT_COLOR = 'green'
 argc = len(sys.argv)
 
+# Input reading and error handling
 if not(argc == 2 or argc == 3):
     print("Enter the correct number of parameters.\nThe program must be run as python 'experiment directory' 'color', where 'color' is the color chosen for segmentation (either green or red)")
     exit()
@@ -38,7 +49,7 @@ else:
     elif argc == 2:
         color = DEFAULT_COLOR
 
-'''Define the superior directory'''
+print("Starting FFC, color set as", color)
 
 '''Declare constants'''
 ###### Para acentuar mas contundentemente el -1 cambiarlo por un numero de mayor valor absoluto o ponerla mas grande.
@@ -54,15 +65,9 @@ pattern_seg = '*c1.tif'
 pattern_rfp = '*c2.tif'
 pattern_gfp = '*c3.tif'
 
-# ALWAYS USE FINAL / FOR DIRECTORIES
-dir_corrections = '/home/gutiloluis/Dropbox/71macs/71macs_small_scripts_and_image_corrections/corrections/'
-
-fname_AVG_Dark = 'AVG_Dark.tif'
-fname_AVG_TotalGreen = 'AVG_TotalGreen.tif'
-fname_AVG_TotalRed = 'AVG_TotalRED.tif'
-
 '''Import corrections as images'''
-cor_dark = cv2.imread(dir_corrections+fname_AVG_Dark, -1)
+cor_dark_gfp = cv2.imread(dir_corrections+fname_AVG_Dark, -1)
+cor_dark_rfp = cv2.imread(dir_corrections+fname_AVG_DarkRed, -1)
 cor_rfp = cv2.imread(dir_corrections+fname_AVG_TotalRed, -1)
 cor_gfp = cv2.imread(dir_corrections+fname_AVG_TotalGreen, -1)
 
@@ -92,7 +97,7 @@ def flat_field_correction(fname_img, cor_dark, cor_fluor, s = 1.0):
     '''
     img = cv2.imread(fname_img, -1)
     img_cor = np.zeros_like(img)
-    maxi = np.mean(cor_fluor)
+    maxi = np.amax(cor_fluor)
     for i in range(len(img)):
         for j in range(len(img[0])):
             if(img[i,j] > cor_dark[i,j]):
@@ -127,9 +132,9 @@ def correction_single_dir(dir_img, dir_img_cor):
     for fname_img in fnames_seg:
         
         if color == 'green':
-            img_pre_cor = flat_field_correction(fname_img, cor_dark, cor_gfp, s)
+            img_pre_cor = flat_field_correction(fname_img, cor_dark_gfp, cor_gfp, s)
         else:
-            img_pre_cor = flat_field_correction(fname_img, cor_dark, cor_rfp, s)
+            img_pre_cor = flat_field_correction(fname_img, cor_dark_rfp, cor_rfp, s)
 
         img_cor = cv2.filter2D(img_pre_cor, -1, kernel) 
         fname_cor = dir_img_cor + fname_img.split('/')[-1]
@@ -138,7 +143,7 @@ def correction_single_dir(dir_img, dir_img_cor):
     
     for fname_img in fnames_rfp:
         
-        img_cor = flat_field_correction(fname_img, cor_dark, cor_rfp, s)
+        img_cor = flat_field_correction(fname_img, cor_dark_rfp, cor_rfp, s)
 
         fname_cor = dir_img_cor + fname_img.split('/')[-1]
         cv2.imwrite(fname_cor, img_cor)
@@ -146,7 +151,7 @@ def correction_single_dir(dir_img, dir_img_cor):
     
     for fname_img in fnames_gfp:
         
-        img_cor = flat_field_correction(fname_img, cor_dark, cor_gfp, s)
+        img_cor = flat_field_correction(fname_img, cor_dark_gfp, cor_gfp, s)
 
         fname_cor = dir_img_cor + fname_img.split('/')[-1]
         cv2.imwrite(fname_cor, img_cor)

@@ -44,3 +44,5 @@ for dire in time_dirs:
             in_name = part_dir+'/'+file
             out_name = part_dir+'/'+file[:-5]+'1.tif'     
             copyfile(in_name, out_name)
+
+print("Images in", parent_dir, " now have green as the segmentation channel.")
