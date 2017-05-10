@@ -97,11 +97,11 @@ def flat_field_correction(fname_img, cor_dark, cor_fluor, s = 1.0):
     '''
     img = cv2.imread(fname_img, -1)
     img_cor = np.zeros_like(img)
-    maxi = np.amax(cor_fluor)
+    maxi = np.mean(cor_fluor-cor_dark)
     for i in range(len(img)):
         for j in range(len(img[0])):
             if(img[i,j] > cor_dark[i,j]):
-                tmp = maxi * ( img[i,j] - cor_dark[i,j] ) / cor_fluor[i,j]
+                tmp = maxi * ( img[i,j] - cor_dark[i,j] ) / (cor_fluor[i,j] - cor_dark[i,j] )
                 img_cor[i,j] = s * tmp
     return img_cor
 
