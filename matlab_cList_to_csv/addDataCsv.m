@@ -44,5 +44,5 @@ function addDataCsv( pos_path, filename )
     c_full = [c_time, c_xy, c_new];
     
     % Write file
-    dlmwrite(filename, c_full);
+    dlmwrite(filename, c_full, '-append');
 end
