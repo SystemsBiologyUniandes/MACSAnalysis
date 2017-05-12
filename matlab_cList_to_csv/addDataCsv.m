@@ -9,26 +9,26 @@ function addDataCsv( pos_path, filename )
 %       filename must be the complete path of the csv file (including the
 %       .csv extension)
 
-   
-        
     full_filename = strcat(pos_path,'clist.mat');
     c1 = load(full_filename);
     n_rows = size(c1.data3D, 1);
-    n_cols = size(c1.data3D, 2);
+    
+    % UNCOMMENT TO EXCLUDE SELECTED CELLS
+    %n_cols = size(c1.data3D, 2);
       
-    try
-        c_new = zeros(n_rows - length(c1.idExclude), n_cols);
-        i_new = 1;
-        for i = 1:n_rows
-            if ~any(c1.idExclude == i)
-                c_new(i_new,:) = c1.data3D(i,:);
-                i_new=i_new+1;
-            end
-        end
-        n_rows = n_rows - length(c1.idExclude);    
-    catch
-        c_new = c1.data3D;
-    end
+%     try
+%         c_new = zeros(n_rows - length(c1.idExclude), n_cols);
+%         i_new = 1;
+%         for i = 1:n_rows
+%             if ~any(c1.idExclude == i)
+%                 c_new(i_new,:) = c1.data3D(i,:);
+%                 i_new=i_new+1;
+%             end
+%         end
+%         n_rows = n_rows - length(c1.idExclude);    
+%     catch
+    c_new = c1.data3D;
+%     end
     
     % NEW Extracts the position from the dir name
     pos_split = strsplit(pos_path, '/');
@@ -44,5 +44,5 @@ function addDataCsv( pos_path, filename )
     c_full = [c_time, c_xy, c_new];
     
     % Write file
-    dlmwrite(filename, c_full,'-append');
+    dlmwrite(filename, c_full);
 end
